@@ -45,7 +45,7 @@ shortRestButton.addEventListener('click', () => {
 })
 
 longRestButton.addEventListener('click', () => {
-  countDownTime
+  countDownTime = 900
   changeContext('descanso-longo')
   longRestButton.classList.add('active')
 })
