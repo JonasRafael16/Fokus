@@ -35,12 +35,18 @@ const selectTask = (task, item) => {
   itemTaskSelected = task;
 }
 
-const selectTaskToEdit = () => {
+const selectTaskToEdit = (task, element) => {
+  if(taskInEdition == task) {
+    clearTaskForm();
+    return;
+  }
+
   formLabel.textContent = 'Editando tarefa';
+  taskInEdition = task;
+  paragraphInEdition = element;
+  textArea.value = task.description;
   formTask.classList.remove('hidden');
-  textArea.value = itemTaskSelected.description;
-  taskInEdition = itemTaskSelected;
-  textInEdition = textArea.value;
+
 }
 
 
@@ -56,7 +62,15 @@ function createTask(task) {
   paragraph.textContent = task.description;
 
   const button = document.createElement('button');
+  button.classList.add('app_button-edit');
+  const editImageIcon = document.createElement('img');
+  editImageIcon.src = '/imagens/edit.png';
+  button.appendChild(editImageIcon);
 
+  button.addEventListener('click', (event) => {
+    event.stopPropagation();
+    selectTaskToEdit(task, paragraph);
+  });
 
   li.onclick = () => {
     selectTask(task, li);
@@ -72,7 +86,6 @@ function createTask(task) {
     li.classList.add('app__section-task-list-item-complete');
   }
 
-
   li.appendChild(svgIcon);
   li.appendChild(paragraph);
   li.appendChild(button);
@@ -87,6 +100,8 @@ function showTasksList(task) {
 }
 
 function clearTaskForm() {
+  taskInEdition = null;
+  paragraphInEdition = null;
   textArea.value = null;
   formTask.classList.add('hidden')
 }
@@ -109,6 +124,15 @@ toggleFormTaskButton.addEventListener('click', () => {
 
 formTask.addEventListener('submit', (event) => {
   event.preventDefault();
+
+  if (taskInEdition) {
+    taskInEdition.description = textArea.value;
+    paragraphInEdition.textContent = textArea.value;
+    clearTaskForm();
+    updateLocalStorage();
+    return;
+  }
+
   const task = {
     description: textArea.value,
     done: false
